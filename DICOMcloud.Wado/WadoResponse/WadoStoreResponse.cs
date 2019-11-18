@@ -16,126 +16,126 @@ namespace DICOMcloud.Wado
 {
     public class WadoStoreResponse
     {
-        private DicomDataset _dataset ;
+        private DicomDataset _dataset;
         public IRetrieveUrlProvider UrlProvider { get; set; }
-        public IStudyId StudyId                 { get; private set; }
-        public HttpStatusCode HttpStatus        { get; private set ; }
-        public string StatusMessage             { get; private set;}
+        public IStudyId StudyId { get; private set; }
+        public HttpStatusCode HttpStatus { get; private set; }
+        public string StatusMessage { get; private set; }
 
-        private bool _successAdded = false ;
-        private bool _failureAdded = false ;
+        private bool _successAdded = false;
+        private bool _failureAdded = false;
 
-        public WadoStoreResponse ( )
-        : this ( null, null )
+        public WadoStoreResponse()
+        : this(null, null)
         {
 
         }
 
-        public WadoStoreResponse ( IStudyId studyId, IRetrieveUrlProvider urlProvider = null)
+        public WadoStoreResponse(IStudyId studyId, IRetrieveUrlProvider urlProvider = null)
         {
-            _dataset         = new DicomDataset ( ) { AutoValidate = false };
-            UrlProvider      = urlProvider?? new RetrieveUrlProvider( ) ;
-            StudyId          = studyId;
-            HttpStatus       = HttpStatusCode.Unused ;
-            StatusMessage    = "" ;
+            _dataset = new DicomDataset() { AutoValidate = false };
+            UrlProvider = urlProvider ?? new RetrieveUrlProvider();
+            StudyId = studyId;
+            HttpStatus = HttpStatusCode.Unused;
+            StatusMessage = "";
         }
 
-        public DicomDataset GetResponseContent ( )
-        {   
-            string studyUrl =  "";
+        public DicomDataset GetResponseContent()
+        {
+            string studyUrl = "";
 
             if (null != StudyId)
             {
                 studyUrl = UrlProvider.GetStudyUrl(StudyId);
             }
 
-            _dataset.AddOrUpdate<string>(DicomTag.RetrieveURI, studyUrl ) ;
-        
-            return _dataset ;
+            _dataset.AddOrUpdate<string>(DicomTag.RetrieveURI, studyUrl);
+
+            return _dataset;
         }
 
-        public void AddResult ( DicomDataset ds, Exception ex )
+        public void AddResult(DicomDataset ds, Exception ex)
         {
-            var referencedInstance = GetReferencedInstsance ( ds ) ;
-            var failedSeq          = (_dataset.Contains (DicomTag.FailedSOPSequence)) ? _dataset.GetSingleValue<DicomSequence>(DicomTag.FailedSOPSequence) : new DicomSequence ( DicomTag.FailedSOPSequence ) ;
-            var item               = new DicomDataset ( ) { AutoValidate = false };
+            var referencedInstance = GetReferencedInstsance(ds);
+            var failedSeq = (_dataset.Contains(DicomTag.FailedSOPSequence)) ? _dataset.GetSingleValue<DicomSequence>(DicomTag.FailedSOPSequence) : new DicomSequence(DicomTag.FailedSOPSequence);
+            var item = new DicomDataset() { AutoValidate = false };
 
-            referencedInstance.Merge ( item ) ;
+            referencedInstance.Merge(item);
 
-             
-            _dataset.AddOrUpdate (failedSeq);
-            
-            failedSeq.Items.Add ( item ) ;
-            
-            if ( _successAdded )
+
+            _dataset.AddOrUpdate(failedSeq);
+
+            failedSeq.Items.Add(item);
+
+            if (_successAdded)
             {
-                HttpStatus = HttpStatusCode.Accepted ;
+                HttpStatus = HttpStatusCode.Accepted;
             }
             else
             {
-                SetError ( ex, item ) ;
+                SetError(ex, item);
             }
 
-            _failureAdded = true ;
+            _failureAdded = true;
         }
 
-        
-        public void AddResult ( DicomDataset ds )
+
+        public void AddResult(DicomDataset ds)
         {
-            var referencedInstance = GetReferencedInstsance ( ds ) ;
-            var referencedSeq      = (_dataset.Contains(DicomTag.ReferencedSOPSequence)) ? _dataset.GetSingleValue<DicomSequence>(DicomTag.ReferencedSOPSequence) : new DicomSequence ( DicomTag.ReferencedSOPSequence) ;
-            var item               = new DicomDataset ( ) { AutoValidate = false };
+            var referencedInstance = GetReferencedInstsance(ds);
+            var referencedSeq = (_dataset.Contains(DicomTag.ReferencedSOPSequence)) ? _dataset.GetSingleValue<DicomSequence>(DicomTag.ReferencedSOPSequence) : new DicomSequence(DicomTag.ReferencedSOPSequence);
+            var item = new DicomDataset() { AutoValidate = false };
 
-            referencedInstance.Merge ( item ) ;
+            referencedInstance.Merge(item);
 
-            _dataset.AddOrUpdate ( referencedSeq ) ;
-            referencedSeq.Items.Add ( item ) ;
-            
-            item.AddOrUpdate<string> (DicomTag.RetrieveURI, UrlProvider.GetInstanceUrl ( DicomObjectIdFactory.Instance.CreateObjectId ( ds ) ) ) ; 
-            
-            if ( _failureAdded )
+            _dataset.AddOrUpdate(referencedSeq);
+            referencedSeq.Items.Add(item);
+
+            item.AddOrUpdate<string>(DicomTag.RetrieveURI, UrlProvider.GetInstanceUrl(DicomObjectIdFactory.Instance.CreateObjectId(ds)));
+
+            if (_failureAdded)
             {
-                HttpStatus = HttpStatusCode.Accepted ; 
+                HttpStatus = HttpStatusCode.Accepted;
             }
             else
             {
-                HttpStatus = HttpStatusCode.OK ;
+                HttpStatus = HttpStatusCode.OK;
             }
 
-            _successAdded = true ;
+            _successAdded = true;
         }
-        
-        private DicomDataset GetReferencedInstsance ( DicomDataset ds )
+
+        private DicomDataset GetReferencedInstsance(DicomDataset ds)
         {
-            var classUID = ds.GetSingleValueOrDefault<DicomElement> ( DicomTag.SOPClassUID, null ) ;
-            var sopUID   = ds.GetSingleValueOrDefault<DicomElement> ( DicomTag.SOPInstanceUID, null ) ;
-            var dataset  = new DicomDataset ( ) { AutoValidate = false };
+            var classUID = ds.GetSingleValueOrDefault<DicomElement>(DicomTag.SOPClassUID, null);
+            var sopUID = ds.GetSingleValueOrDefault<DicomElement>(DicomTag.SOPInstanceUID, null);
+            var dataset = new DicomDataset() { AutoValidate = false };
 
-            dataset.AddOrUpdate ( classUID ) ;
-            dataset.AddOrUpdate ( sopUID ) ;
+            dataset.AddOrUpdate(classUID);
+            dataset.AddOrUpdate(sopUID);
 
-            return dataset ;
+            return dataset;
         }
-    
-        private void SetError(Exception ex, DicomDataset responseDS )
+
+        private void SetError(Exception ex, DicomDataset responseDS)
         {
-            if ( ex is DCloudException )
+            if (ex is DCloudException)
             {
-                HttpStatus    = HttpStatusCode.Conflict ;
-                StatusMessage = (string.IsNullOrEmpty (StatusMessage)) ? ex.Message : StatusMessage + ";" + ex.Message ;
+                HttpStatus = HttpStatusCode.Conflict;
+                StatusMessage = (string.IsNullOrEmpty(StatusMessage)) ? ex.Message : StatusMessage + ";" + ex.Message;
             }
-            else if (ex is KeyNotFoundException)        {HttpStatus = HttpStatusCode.NotFound;}
-            else if (ex is ArgumentException)           {HttpStatus = HttpStatusCode.BadRequest;}
-            else if (ex is InvalidOperationException)   {HttpStatus = HttpStatusCode.BadRequest;}
-            else if (ex is UnauthorizedAccessException) {HttpStatus = HttpStatusCode.Unauthorized;}
+            else if (ex is KeyNotFoundException) { HttpStatus = HttpStatusCode.NotFound; }
+            else if (ex is ArgumentException) { HttpStatus = HttpStatusCode.BadRequest; }
+            else if (ex is InvalidOperationException) { HttpStatus = HttpStatusCode.BadRequest; }
+            else if (ex is UnauthorizedAccessException) { HttpStatus = HttpStatusCode.Unauthorized; }
             else
             {
-                HttpStatus    = HttpStatusCode.InternalServerError ;
-                StatusMessage = "" ;
+                HttpStatus = HttpStatusCode.InternalServerError;
+                StatusMessage = "";
             }
 
             ////0110 - Processing failure
-            responseDS.AddOrUpdate<UInt16> (DicomTag.FailureReason, 272) ; 
+            responseDS.AddOrUpdate<UInt16>(DicomTag.FailureReason, 272);
         }
     }
 }

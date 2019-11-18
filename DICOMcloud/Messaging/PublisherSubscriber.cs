@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PubSub ;
+using PubSub;
 
 
 namespace DICOMcloud.Messaging
@@ -12,35 +12,35 @@ namespace DICOMcloud.Messaging
     {
         public void Publish<T>(object sender, T message) where T : ITransportMessage
         {
-            OnPublishing ( sender, message ) ;
-            
-            _eventBroker.Publish <T> ( sender, message ) ;
+            OnPublishing(sender, message);
+
+            _eventBroker.Publish<T>(sender, message);
         }
 
         public void Subscribe<T>(object sender, Action<T> handler) where T : ITransportMessage
         {
-            OnSubscribing ( this, handler ) ;
+            OnSubscribing(this, handler);
 
-            _eventBroker.Subscribe <T> ( sender, handler ) ;
+            _eventBroker.Subscribe<T>(sender, handler);
         }
 
         public void Unsubscribe<T>(object sender, Action<T> handler) where T : ITransportMessage
         {
-            OnUnsubscribing ( sender, handler ) ;
+            OnUnsubscribing(sender, handler);
 
-            _eventBroker.Unsubscribe <T> ( sender, handler ) ;
+            _eventBroker.Unsubscribe<T>(sender, handler);
         }
 
 
-        protected virtual void OnPublishing<T> ( object sender, T message ) where T : ITransportMessage
-        {}
+        protected virtual void OnPublishing<T>(object sender, T message) where T : ITransportMessage
+        { }
 
-        protected virtual void OnSubscribing<T> ( object sender, Action<T> handler ) where T : ITransportMessage
-        {}
+        protected virtual void OnSubscribing<T>(object sender, Action<T> handler) where T : ITransportMessage
+        { }
 
-        protected virtual void OnUnsubscribing<T> ( object sender, Action<T> handler ) where T : ITransportMessage
-        {}
+        protected virtual void OnUnsubscribing<T>(object sender, Action<T> handler) where T : ITransportMessage
+        { }
 
-        private Hub _eventBroker = new Hub ( ) ;
+        private Hub _eventBroker = new Hub();
     }
 }

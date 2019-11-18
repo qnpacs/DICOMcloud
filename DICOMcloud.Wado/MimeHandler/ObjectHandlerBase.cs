@@ -13,14 +13,14 @@ namespace DICOMcloud.Wado
 {
     public abstract class ObjectHandlerBase : IMimeResponseHandler
     {
-        public virtual IMediaStorageService MediaStorage { get; protected set ; }
-   
+        public virtual IMediaStorageService MediaStorage { get; protected set; }
+
         public abstract bool CanProcess(string mimeType);
-      
-        public ObjectHandlerBase ( IMediaStorageService mediaStorage, IDicomMediaIdFactory mediaFactory )
+
+        public ObjectHandlerBase(IMediaStorageService mediaStorage, IDicomMediaIdFactory mediaFactory)
         {
-            MediaStorage = mediaStorage ;
-            MediaFactory = mediaFactory ;
+            MediaStorage = mediaStorage;
+            MediaFactory = mediaFactory;
         }
 
         public virtual IDicomMediaIdFactory MediaFactory
@@ -28,17 +28,17 @@ namespace DICOMcloud.Wado
             get; protected set;
         }
 
-        public virtual IWadoRsResponse Process (IWadoUriRequest request, string mimeType)
+        public virtual IWadoRsResponse Process(IWadoUriRequest request, string mimeType)
         {
-            Location = MediaStorage.GetLocation ( MediaFactory.Create (request, 
-                                                                       GetMediaProperties ( request, mimeType, 
-                                                                                            GetTransferSyntax ( request ) ) ) ) ;
-         
-            if ( Location != null && Location.Exists ( ) )
+            Location = MediaStorage.GetLocation(MediaFactory.Create(request,
+                                                                       GetMediaProperties(request, mimeType,
+                                                                                            GetTransferSyntax(request))));
+
+            if (Location != null && Location.Exists())
             {
-                WadoResponse response = new WadoResponse ( Location.GetReadStream ( ), mimeType ) ;
-                
-                return response ;
+                WadoResponse response = new WadoResponse(Location.GetReadStream(), mimeType);
+
+                return response;
             }
             else
             {
@@ -48,19 +48,19 @@ namespace DICOMcloud.Wado
         }
 
 
-        protected virtual string GetTransferSyntax ( IWadoUriRequest request )
+        protected virtual string GetTransferSyntax(IWadoUriRequest request)
         {
-            return (request.ImageRequestInfo != null) ? request.ImageRequestInfo.TransferSyntax : "" ;
+            return (request.ImageRequestInfo != null) ? request.ImageRequestInfo.TransferSyntax : "";
         }
 
-        protected virtual DicomMediaProperties GetMediaProperties ( IWadoUriRequest request, string mimeType, string transferSyntax )
+        protected virtual DicomMediaProperties GetMediaProperties(IWadoUriRequest request, string mimeType, string transferSyntax)
         {
-            return new DicomMediaProperties {  MediaType = mimeType, TransferSyntax = transferSyntax } ;
+            return new DicomMediaProperties { MediaType = mimeType, TransferSyntax = transferSyntax };
         }
 
-      protected abstract WadoResponse DoProcess(IWadoUriRequest request, string mimeType);
+        protected abstract WadoResponse DoProcess(IWadoUriRequest request, string mimeType);
 
-       protected IStorageLocation Location { get; set; }
+        protected IStorageLocation Location { get; set; }
 
-   }
+    }
 }

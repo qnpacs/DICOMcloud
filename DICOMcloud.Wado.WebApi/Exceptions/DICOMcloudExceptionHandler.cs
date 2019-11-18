@@ -25,13 +25,13 @@ namespace DICOMcloud.Wado.WebApi.Exceptions
                 throw new ArgumentNullException("context");
             }
 
-            ExceptionContext   exceptionContext = context.ExceptionContext;
-            Exception          exception        = exceptionContext.Exception;
-            HttpRequestMessage request          = exceptionContext.Request;
+            ExceptionContext exceptionContext = context.ExceptionContext;
+            Exception exception = exceptionContext.Exception;
+            HttpRequestMessage request = exceptionContext.Request;
 
             if (request == null)
             {
-                base.Handle ( context ) ;
+                base.Handle(context);
             }
 
             if (exceptionContext.CatchBlock == ExceptionCatchBlocks.IExceptionFilter)
@@ -41,20 +41,20 @@ namespace DICOMcloud.Wado.WebApi.Exceptions
                 return;
             }
 
-            if ( exception is DCloudException )
+            if (exception is DCloudException)
             {
-                context.Result = new ResponseMessageResult ( request.CreateErrorResponse ( HttpStatusCode.BadRequest,
+                context.Result = new ResponseMessageResult(request.CreateErrorResponse(HttpStatusCode.BadRequest,
                                                                                            exception.Message));
             }
             else
             {
-                context.Result = new ResponseMessageResult ( request.CreateErrorResponse (HttpStatusCode.InternalServerError, ""));
+                context.Result = new ResponseMessageResult(request.CreateErrorResponse(HttpStatusCode.InternalServerError, ""));
             }
         }
-    
-       public override bool ShouldHandle(ExceptionHandlerContext context)
-       {
-            return true ;
-       }
+
+        public override bool ShouldHandle(ExceptionHandlerContext context)
+        {
+            return true;
+        }
     }
 }

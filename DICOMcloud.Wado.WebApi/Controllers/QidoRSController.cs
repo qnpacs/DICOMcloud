@@ -13,11 +13,11 @@ namespace DICOMcloud.Wado.Controllers
     /// </summary>
     public class QidoRSController : ApiController
     {
-        protected IQidoRsService QidoService {get; set;}
+        protected IQidoRsService QidoService { get; set; }
 
-        public QidoRSController ( IQidoRsService qidoService )
+        public QidoRSController(IQidoRsService qidoService)
         {
-            QidoService = qidoService ;
+            QidoService = qidoService;
         }
 
         /// <summary>
@@ -29,11 +29,11 @@ namespace DICOMcloud.Wado.Controllers
         [HttpGet]
         public HttpResponseMessage SearchForStudies
         (
-            [ModelBinder(typeof(QidoRequestModelBinder))] 
+            [ModelBinder(typeof(QidoRequestModelBinder))]
             IQidoRequestModel request
         )
         {
-            return QidoService.SearchForStudies ( request ) ;
+            return QidoService.SearchForStudies(request);
         }
 
         /// <summary>
@@ -44,13 +44,13 @@ namespace DICOMcloud.Wado.Controllers
         [Route("qidors/studies/{StudyInstanceUID}/series")]
         [Route("qidors/series")]
         [HttpGet]
-        public HttpResponseMessage SearchForSeries 
-        ( 
-            [ModelBinder(typeof(QidoRequestModelBinder))] 
-            IQidoRequestModel request 
-        ) 
+        public HttpResponseMessage SearchForSeries
+        (
+            [ModelBinder(typeof(QidoRequestModelBinder))]
+            IQidoRequestModel request
+        )
         {
-            return QidoService.SearchForSeries ( request ) ;
+            return QidoService.SearchForSeries(request);
         }
 
         /// <summary>
@@ -62,13 +62,13 @@ namespace DICOMcloud.Wado.Controllers
         [Route("qidors/studies/{StudyInstanceUID}/instances")]
         [Route("qidors/instances")]
         [HttpGet]
-        public HttpResponseMessage SearchForInstances 
+        public HttpResponseMessage SearchForInstances
         (
-            [ModelBinder(typeof(QidoRequestModelBinder))] 
-            IQidoRequestModel request  
-        ) 
+            [ModelBinder(typeof(QidoRequestModelBinder))]
+            IQidoRequestModel request
+        )
         {
-            return QidoService.SearchForInstances ( request ) ;
+            return QidoService.SearchForInstances(request);
         }
     }
 }

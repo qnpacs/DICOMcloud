@@ -9,62 +9,62 @@ namespace DICOMcloud.Wado
 {
     public class RetrieveUrlProvider : IRetrieveUrlProvider
     {
-        public static string config_WadoRs_API_URL = "app:WadoRsUrl" ;
-        public static string config_WadoUri_API_URL = "app:WadoUriUrl" ;
+        public static string config_WadoRs_API_URL = "app:WadoRsUrl";
+        public static string config_WadoUri_API_URL = "app:WadoUriUrl";
 
-        public RetrieveUrlProvider( )
+        public RetrieveUrlProvider()
         {
-            string wadoRsUrl = System.Configuration.ConfigurationManager.AppSettings[config_WadoRs_API_URL] ;
-            string wadoUriUrl = System.Configuration.ConfigurationManager.AppSettings[config_WadoUri_API_URL] ;
-            
+            string wadoRsUrl = System.Configuration.ConfigurationManager.AppSettings[config_WadoRs_API_URL];
+            string wadoUriUrl = System.Configuration.ConfigurationManager.AppSettings[config_WadoUri_API_URL];
 
-            wadoRsUrl = wadoRsUrl ?? "" ;
-            wadoUriUrl = wadoUriUrl ?? "" ;
 
-            Init ( wadoRsUrl, wadoUriUrl ) ;
+            wadoRsUrl = wadoRsUrl ?? "";
+            wadoUriUrl = wadoUriUrl ?? "";
+
+            Init(wadoRsUrl, wadoUriUrl);
         }
 
-        public RetrieveUrlProvider( string wadoRsUrl, string wadoUriUrl )
+        public RetrieveUrlProvider(string wadoRsUrl, string wadoUriUrl)
         {
-            Init ( wadoRsUrl, wadoUriUrl ) ;
+            Init(wadoRsUrl, wadoUriUrl);
         }
 
         public string GetStudyUrl(IStudyId study)
         {
-            return GetStudyUrl (study.StudyInstanceUID);
+            return GetStudyUrl(study.StudyInstanceUID);
         }
 
-        private string GetStudyUrl (string studyInstanceUID)
+        private string GetStudyUrl(string studyInstanceUID)
         {
             return string.Format("{0}/{1}/studies/{2}", BaseWadoRsUrl, "wadors", studyInstanceUID);
         }
 
-        public virtual string GetInstanceUrl ( IObjectId instance )
+        public virtual string GetInstanceUrl(IObjectId instance)
         {
-            return GetInstanceUrl ( instance.StudyInstanceUID, instance.SeriesInstanceUID, instance.SOPInstanceUID ) ;
+            return GetInstanceUrl(instance.StudyInstanceUID, instance.SeriesInstanceUID, instance.SOPInstanceUID);
         }
-        
-        private string GetInstanceUrl 
+
+        private string GetInstanceUrl
         (
-            string studyInstanceUID, 
-            string seriesInstanceUID, 
+            string studyInstanceUID,
+            string seriesInstanceUID,
             string sopInstanceUID
         )
         {
-            if ( PreferWadoUri )
+            if (PreferWadoUri)
             {
-                return BaseWadoUriUrl + GenerateWadoUriPart (studyInstanceUID, seriesInstanceUID, sopInstanceUID );
+                return BaseWadoUriUrl + GenerateWadoUriPart(studyInstanceUID, seriesInstanceUID, sopInstanceUID);
             }
             else
             {
-                return BaseWadoRsUrl + GenerateWadoRsPart (studyInstanceUID, seriesInstanceUID, sopInstanceUID);
+                return BaseWadoRsUrl + GenerateWadoRsPart(studyInstanceUID, seriesInstanceUID, sopInstanceUID);
             }
         }
 
         protected virtual string GenerateWadoUriPart
-        ( 
-            string studyInstanceUID, 
-            string seriesInstanceUID, 
+        (
+            string studyInstanceUID,
+            string seriesInstanceUID,
             string sopInstanceUID
         )
         {
@@ -82,16 +82,16 @@ namespace DICOMcloud.Wado
         }
 
 
-        public virtual string BaseWadoRsUrl  { get; set; }
+        public virtual string BaseWadoRsUrl { get; set; }
         public virtual string BaseWadoUriUrl { get; set; }
-        public virtual bool PreferWadoUri    { get; set; }
+        public virtual bool PreferWadoUri { get; set; }
 
 
-        private void Init ( string wadoRsUrl, string wadoUriUrl ) 
+        private void Init(string wadoRsUrl, string wadoUriUrl)
         {
-            BaseWadoRsUrl  = wadoRsUrl ;
-            BaseWadoUriUrl = wadoUriUrl ;
-            PreferWadoUri  = true ;
+            BaseWadoRsUrl = wadoRsUrl;
+            BaseWadoUriUrl = wadoUriUrl;
+            PreferWadoUri = true;
         }
     }
 }

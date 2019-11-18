@@ -20,7 +20,7 @@ namespace DICOMcloud.Wado
                 string headers = CloudConfigurationManager.GetSetting("cors:headers");
                 string methods = CloudConfigurationManager.GetSetting("cors:methods");
 
-                config.MessageHandlers.Add(new PreflightRequestsHandler(origins, headers, methods));
+                //    config.MessageHandlers.Add(new PreflightRequestsHandler(origins, headers, methods));
                 config.EnableCors(new EnableCorsAttribute(origins, headers, methods));
             }
 
