@@ -11,14 +11,14 @@ namespace DICOMcloud.Pacs
     {
         public IObjectArchieveDataAccess QueryDataAccess { get; protected set; }
 
-        public DicomQueryServiceBase ( IObjectArchieveDataAccess queryDataAccess )
+        public DicomQueryServiceBase(IObjectArchieveDataAccess queryDataAccess)
         {
-            QueryDataAccess = queryDataAccess ;
+            QueryDataAccess = queryDataAccess;
         }
 
-        public IEnumerable<fo.DicomDataset> Find 
-        ( 
-            fo.DicomDataset request, 
+        public IEnumerable<fo.DicomDataset> Find
+        (
+            fo.DicomDataset request,
             IQueryOptions options,
             string queryLevel
         )
@@ -27,25 +27,25 @@ namespace DICOMcloud.Pacs
             IEnumerable<IMatchingCondition> conditions = null;
 
 
-            conditions = BuildConditions ( request, new ConditionFactory ( ) );
+            conditions = BuildConditions(request, new ConditionFactory());
 
-            return DoFind ( request, options, queryLevel, conditions );
+            return DoFind(request, options, queryLevel, conditions);
         }
 
         public PagedResult<fo.DicomDataset> FindPaged
-        ( 
-            fo.DicomDataset request, 
+        (
+            fo.DicomDataset request,
             IQueryOptions options,
             string queryLevel
-        ) 
+        )
         {
 
             IEnumerable<IMatchingCondition> conditions = null;
 
 
-            conditions = BuildConditions ( request, new ConditionFactory ( ) );
+            conditions = BuildConditions(request, new ConditionFactory());
 
-            return DoFindPaged ( request, options, queryLevel, conditions );
+            return DoFindPaged(request, options, queryLevel, conditions);
         }
 
         protected virtual IEnumerable<IMatchingCondition> BuildConditions
@@ -54,23 +54,23 @@ namespace DICOMcloud.Pacs
             ConditionFactory condFactory
         )
         {
-            return condFactory.ProcessDataSet ( request ) ;
+            return condFactory.ProcessDataSet(request);
         }
 
         protected abstract IEnumerable<fo.DicomDataset> DoFind
         (
             fo.DicomDataset request,
-            IQueryOptions options, 
+            IQueryOptions options,
             string queryLevel,
             IEnumerable<IMatchingCondition> conditions
-        ) ;
+        );
 
         protected abstract PagedResult<fo.DicomDataset> DoFindPaged
         (
             fo.DicomDataset request,
-            IQueryOptions options, 
+            IQueryOptions options,
             string queryLevel,
             IEnumerable<IMatchingCondition> conditions
-        ) ;
+        );
     }
 }

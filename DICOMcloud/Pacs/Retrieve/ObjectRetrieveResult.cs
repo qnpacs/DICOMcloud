@@ -8,10 +8,10 @@ namespace DICOMcloud.Pacs
 
     public class ObjectRetrieveResult
     {
-        public ObjectRetrieveResult ( IStorageLocation location, string transfer ) 
+        public ObjectRetrieveResult(IStorageLocation location, string transfer)
         {
-            Location       = location ;
-            TransferSyntax = transfer ;
+            Location = location;
+            TransferSyntax = transfer;
         }
 
         public IStorageLocation Location { get; set; }

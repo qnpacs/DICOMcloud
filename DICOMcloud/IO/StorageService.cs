@@ -7,90 +7,90 @@ using System.Threading.Tasks;
 
 namespace DICOMcloud.IO
 {
-    public abstract class MediaStorageService : IMediaStorageService 
+    public abstract class MediaStorageService : IMediaStorageService
     {
-        public virtual Stream Read ( IMediaId key ) 
+        public virtual Stream Read(IMediaId key)
         {
-            var location = GetLocation ( key ) ;
-        
-            return location.Download ( ) ;    
-        }
-        
-        public virtual void Write ( Stream stream, IMediaId id, string contentType )
-        {
-            var location = GetLocation ( id ) ;
-        
-            location.Upload ( stream, contentType ) ;
+            var location = GetLocation(key);
+
+            return location.Download();
         }
 
-        public virtual IStorageLocation GetLocation ( IMediaId id )
+        public virtual void Write(Stream stream, IMediaId id, string contentType)
         {
-            string            key       = KeyProvider.GetStorageKey ( id ) ;
-            IStorageContainer container = GetContainer              ( KeyProvider.GetContainerName ( key ) ) ;
-            var               location  = container.GetLocation     ( KeyProvider.GetLocationName  ( key ), id ) ; 
-            
+            var location = GetLocation(id);
 
-            return location ;
+            location.Upload(stream, contentType);
         }
 
-        public IEnumerable<IStorageLocation> EnumerateLocation ( IMediaId id )
+        public virtual IStorageLocation GetLocation(IMediaId id)
         {
-            string  key          = KeyProvider.GetStorageKey ( id ) ;
-            string containerName = KeyProvider.GetContainerName ( key) ;
-            
-            
-            foreach ( IStorageContainer container in GetContainers ( containerName ) )
+            string key = KeyProvider.GetStorageKey(id);
+            IStorageContainer container = GetContainer(KeyProvider.GetContainerName(key));
+            var location = container.GetLocation(KeyProvider.GetLocationName(key), id);
+
+
+            return location;
+        }
+
+        public IEnumerable<IStorageLocation> EnumerateLocation(IMediaId id)
+        {
+            string key = KeyProvider.GetStorageKey(id);
+            string containerName = KeyProvider.GetContainerName(key);
+
+
+            foreach (IStorageContainer container in GetContainers(containerName))
             {
-                foreach ( IStorageLocation location in container.GetLocations ( KeyProvider.GetLocationName (key) ) )
+                foreach (IStorageLocation location in container.GetLocations(KeyProvider.GetLocationName(key)))
                 {
-                    yield return location ;
+                    yield return location;
                 }
             }
 
         }
 
-        public void DeleteLocations ( IMediaId id )
+        public void DeleteLocations(IMediaId id)
         {
-            string  key          = KeyProvider.GetStorageKey ( id ) ;
-            string containerName = KeyProvider.GetContainerName ( key) ;
-            
-            
-            if ( ContainerExists ( key) )
-            {
-                var container = GetContainer ( key ) ;
+            string key = KeyProvider.GetStorageKey(id);
+            string containerName = KeyProvider.GetContainerName(key);
 
-                container.Delete ( ) ;
+
+            if (ContainerExists(key))
+            {
+                var container = GetContainer(key);
+
+                container.Delete();
             }
             else
             {
-                var location = GetLocation (id ) ;
-                
-                location.Delete ( ) ;
+                var location = GetLocation(id);
+
+                location.Delete();
             }
         }
 
-        public bool Exists ( IMediaId id )
+        public bool Exists(IMediaId id)
         {
-            string key           = KeyProvider.GetStorageKey ( id ) ;
-            string containerName = KeyProvider.GetContainerName ( key) ;
-            IStorageContainer container ;
+            string key = KeyProvider.GetStorageKey(id);
+            string containerName = KeyProvider.GetContainerName(key);
+            IStorageContainer container;
 
 
-            if ( ContainerExists ( containerName ) )
+            if (ContainerExists(containerName))
             {
-                container = GetContainer ( containerName ) ;
+                container = GetContainer(containerName);
 
-                return container.LocationExists ( KeyProvider.GetLocationName ( key ) ) ;
+                return container.LocationExists(KeyProvider.GetLocationName(key));
             }
 
-            return false ;
+            return false;
         }
 
-        protected virtual IKeyProvider KeyProvider 
-        { 
+        protected virtual IKeyProvider KeyProvider
+        {
             get
             {
-                return GetKeyProvider ( ) ;
+                return GetKeyProvider();
             }
         }
 
@@ -100,8 +100,8 @@ namespace DICOMcloud.IO
         /// <returns>
         /// An <see cref="IKeyProvider"/>
         /// </returns>
-        protected abstract IKeyProvider GetKeyProvider    ( ) ;
-        
+        protected abstract IKeyProvider GetKeyProvider();
+
         /// <summary>
         /// Returns the <<see cref="IStorageContainer "/> for a container key
         /// </summary>
@@ -111,8 +111,8 @@ namespace DICOMcloud.IO
         /// <returns>
         /// An object of type <see cref="IStorageContainer"/>
         /// </returns>
-        protected abstract IStorageContainer GetContainer      ( string containerKey ) ;
-        
+        protected abstract IStorageContainer GetContainer(string containerKey);
+
         /// <summary>
         /// Returns all instances of <see cref="IStorageContainer"/> for the given <paramref name="containerKey"/>
         /// </summary>
@@ -122,8 +122,8 @@ namespace DICOMcloud.IO
         /// <returns>
         /// An instance of <see cref="IEnumerable{IStorageContainer}"/>
         /// </returns>
-        protected abstract IEnumerable<IStorageContainer> GetContainers     ( string containerKey ) ;
-        
+        protected abstract IEnumerable<IStorageContainer> GetContainers(string containerKey);
+
         /// <summary>
         /// Determines whether a container exists based on the provided <paramref name="containerName"/>
         /// </summary>
@@ -133,7 +133,7 @@ namespace DICOMcloud.IO
         /// <returns>
         /// True if the container exists; Otherwise, false.
         /// </returns>
-        protected abstract bool ContainerExists   ( string containerName );        
+        protected abstract bool ContainerExists(string containerName);
     }
 }
 

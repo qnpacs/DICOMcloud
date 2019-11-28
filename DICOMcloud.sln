@@ -16,6 +16,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOMcloud.UnitTest", "UnitTests\DICOMcloud.Dicom.UnitTest\DICOMcloud.UnitTest.csproj", "{537C5B38-10A6-4FE6-ACE3-86DEA1D040C8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A7BE32E4-56B3-4D99-845E-554E39843F97}"
+	ProjectSection(SolutionItems) = preProject
+		libs\Dicom.Native.dll = libs\Dicom.Native.dll
+		libs\Dicom.Native64.dll = libs\Dicom.Native64.dll
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DICOMcloud", "DICOMcloud\DICOMcloud.csproj", "{C9278C3E-53CB-4CB3-ADB6-FE64D2585E7A}"
 EndProject

@@ -14,5 +14,11 @@ namespace PACS.Cloud.Controllers
 
             return View();
         }
+
+        [Route("viewer/{studyInstanceUid?}")]
+        public ActionResult Viewer(string studyInstanceUid = "", string url = "")
+        {
+            return View();
+        }
     }
 }
