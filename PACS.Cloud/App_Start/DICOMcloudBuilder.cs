@@ -175,13 +175,14 @@ namespace PACS.Cloud
             }
             else
             {
-                StorageAccount = CloudStorageAccount.Parse(StorageConection);
+                //StorageAccount = CloudStorageAccount.Parse(StorageConection);
 
-                AzureStorageSupported = true;
+                //AzureStorageSupported = true;
 
-                For<CloudStorageAccount>().Use(@StorageAccount);
+                //For<CloudStorageAccount>().Use(@StorageAccount);
 
-                For<IMediaStorageService>().Use<AzureStorageService>().Ctor<CloudStorageAccount>().Is(StorageAccount);
+                //For<IMediaStorageService>().Use<AzureStorageService>().Ctor<CloudStorageAccount>().Is(StorageAccount);
+                For<IMediaStorageService>().Use<DICOMcloud.AWS.Storage.AWSStorageService>();
             }
         }
 

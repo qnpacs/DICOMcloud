@@ -9,7 +9,7 @@ namespace DICOMcloud.IO
 {
     public class LocalStorageLocation : IStorageLocation
     {
-        private long? _size ;
+        private long? _size;
 
         public bool AutoDeleteWriteStream
         {
@@ -18,136 +18,136 @@ namespace DICOMcloud.IO
 
         public string ID { get; private set; }
 
-        public virtual string Name 
-        { 
-            get ;
-            private set; 
+        public virtual string Name
+        {
+            get;
+            private set;
         }
 
         public IMediaId MediaId { get; }
 
-        public long GetSize ( )
+        public long GetSize()
         {
-            if ( null != _size )
+            if (null != _size)
             {
-                return _size.Value ;
+                return _size.Value;
             }
             else
             {
-                var fileInfo = new FileInfo ( ID ) ;
+                var fileInfo = new FileInfo(ID);
 
-                _size = fileInfo.Length ;
+                _size = fileInfo.Length;
 
-                return _size.Value ;
+                return _size.Value;
             }
         }
 
-        public LocalStorageLocation ( string fileName, IMediaId id = null )
-        { 
-            ID     = fileName  ;
-            MediaId = id ;
-            Name    = Path.GetFileName ( fileName ) ;
-            __MetadataFileName = Path.Combine ( fileName, "meta" ) ;
-            Refresh ( ) ;
+        public LocalStorageLocation(string fileName, IMediaId id = null)
+        {
+            ID = fileName;
+            MediaId = id;
+            Name = Path.GetFileName(fileName);
+            __MetadataFileName = Path.Combine(fileName, "meta");
+            Refresh();
         }
 
         public virtual Stream Download()
         {
-            Refresh ( ) ;
+            Refresh();
 
             return File.Open(ID, FileMode.OpenOrCreate, FileAccess.Read, FileShare.ReadWrite);
         }
 
-        public virtual void Download ( Stream stream )
-        {            
+        public virtual void Download(Stream stream)
+        {
             using (FileStream fs = File.OpenRead(ID))
             {
-                fs.CopyTo ( stream ) ;
+                fs.CopyTo(stream);
             }
 
-            Refresh ( ) ;
+            Refresh();
         }
 
-        public virtual void Upload (Stream data, string contentType = null)
+        public virtual void Upload(Stream data, string contentType = null)
         {
-            using (FileStream fs = File.Create (ID) )
+            using (FileStream fs = File.Create(ID))
             {
                 data.CopyTo(fs);
             }
 
-            WriteMetadata ( ) ;
-        }
-        
-        public virtual void Upload (byte[] buffer, string contentType = null)
-        {
-            File.WriteAllBytes ( ID, buffer ) ;
-            WriteMetadata ( ) ;
-        }
-        
-        public virtual void Upload (string fileName, string contentType = null)
-        {
-            File.Copy ( fileName, ID, true) ;
-            WriteMetadata ( ) ;
+            WriteMetadata();
         }
 
-        public virtual Stream GetWriteStream ( )
+        public virtual void Upload(byte[] buffer, string contentType = null)
         {
-            string path = ID ;
+            File.WriteAllBytes(ID, buffer);
+            WriteMetadata();
+        }
+
+        public virtual void Upload(string fileName, string contentType = null)
+        {
+            File.Copy(fileName, ID, true);
+            WriteMetadata();
+        }
+
+        public virtual Stream GetWriteStream()
+        {
+            string path = ID;
 
             //FileOptions options = autoDeletOnClose ? FileOptions.DeleteOnClose : FileOptions.None ;
 
-            return File.Create ( path ) ;//, 1024*1024, options );
+            return File.Create(path);//, 1024*1024, options );
 
         }
-        
-         public virtual void Delete ()
+
+        public virtual void Delete()
         {
-            File.Delete ( ID ) ;
+            File.Delete(ID);
         }
 
         public Stream GetReadStream()
         {
-            return File.OpenRead ( ID ) ;
+            return File.OpenRead(ID);
         }
 
-        public string ContentType 
-        { 
+        public string ContentType
+        {
             get
             {
-                return "" ;
-            } 
+                return "";
+            }
         }
 
         public string Metadata
         {
             get;
-            
+
             set;
         }
 
-        public bool Exists ( )
+        public bool Exists()
         {
-            return File.Exists ( ID ) ;
+            return File.Exists(ID);
         }
-    
+
         private void WriteMetadata()
         {
-            if ( !string.IsNullOrEmpty(Metadata) )
-            { 
-                File.WriteAllText ( Path.Combine (ID, ".meta" ), Metadata ) ;
+            if (!string.IsNullOrEmpty(Metadata))
+            {
+                File.WriteAllText(Path.Combine(ID, ".meta"), Metadata);
             }
-        }    
-        
+        }
+
 
         private void Refresh()
         {
-            if ( File.Exists ( __MetadataFileName ) )
+            if (File.Exists(__MetadataFileName))
             {
-                Metadata = File.ReadAllText ( __MetadataFileName ) ;
+                Metadata = File.ReadAllText(__MetadataFileName);
             }
         }
 
-        private string __MetadataFileName { get ; set ; }
+        private string __MetadataFileName { get; set; }
     }
 
     //public class TempStorageLocation : LocalStorageLocation, IDisposable
@@ -156,7 +156,7 @@ namespace DICOMcloud.IO
     //    {
     //        Location = location ;
     //    }
-        
+
     //    ~TempStorageLocation() { Dispose(false); }
 
     //    public IStorageLocation Location

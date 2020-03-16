@@ -1,12 +1,14 @@
 window.config = {
     // default: '/'
     routerBasename: '/',
+    whiteLabelling: {},
     extensions: [],
     showStudyList: true,
+    filterQueryParam: false,
     servers: {
         dicomWeb: [
             {
-                name: 'DCM4CHEE',
+                name: 'QNPACS',
                 wadoUriRoot: '/wadouri',
                 qidoRoot: '/wadors',
                 wadoRoot: '/wadors',
@@ -68,4 +70,5 @@ window.config = {
         // ~ Cornerstone Tools
         { commandName: 'setZoomTool', label: 'Zoom', keys: ['z'] },
     ],
+    cornerstoneExtensionConfig: { tools: {} },
 };

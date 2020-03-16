@@ -17,17 +17,17 @@ namespace DICOMcloud.IO
     {
         public override string GetStorageKey(IMediaId id)
         {
-            return Path.Combine ( id.GetIdParts( ).Select ( GetPartKey ).ToArray ( ) ) ;
+            return Path.Combine(id.GetIdParts().Select(GetPartKey).ToArray());
         }
 
-        private string GetPartKey ( string partId )
+        private string GetPartKey(string partId)
         {
-            if ( partId.Length > 32 )
+            if (partId.Length > 32)
             {
-                return CalculateMD5Hash ( partId ) ;
+                return CalculateMD5Hash(partId);
             }
 
-            return partId ;
+            return partId;
         }
 
         //https://blogs.msdn.microsoft.com/csharpfaq/2006/10/09/how-do-i-calculate-a-md5-hash-from-a-string/
@@ -52,5 +52,5 @@ namespace DICOMcloud.IO
 
             return sb.ToString();
         }
-     }
+    }
 }

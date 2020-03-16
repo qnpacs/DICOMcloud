@@ -6,7 +6,7 @@ namespace DICOMcloud.Azure.IO
     {
         public virtual string GetContainerName(string key)
         {
-            key = key.TrimStart ( GetLogicalSeparator ( ).ToCharArray ( ) ) ;
+            key = key.TrimStart(GetLogicalSeparator().ToCharArray());
 
             int index = key.IndexOf(GetLogicalSeparator());
             index = (index > -1 ? index : key.Length);
@@ -16,25 +16,25 @@ namespace DICOMcloud.Azure.IO
 
         public virtual string GetLocationName(string key)
         {
-            key = key.TrimStart ( GetLogicalSeparator ( ).ToCharArray ( ) ) ;
+            key = key.TrimStart(GetLogicalSeparator().ToCharArray());
 
             int index = key.IndexOf(GetLogicalSeparator());
 
             index = (index > -1 ? index : 0);
-            
+
             key = key.Substring(index, key.Length - index);
-            
-            return key.TrimStart ( GetLogicalSeparator ( ).ToCharArray ( ) ) ;
+
+            return key.TrimStart(GetLogicalSeparator().ToCharArray());
         }
 
         public string GetLogicalSeparator()
         {
-            return "/" ;
+            return "/";
         }
 
         public string GetStorageKey(IMediaId key)
         {
-            return string.Join ( GetLogicalSeparator ( ), key.GetIdParts ( ) ) ;
+            return string.Join(GetLogicalSeparator(), key.GetIdParts());
         }
     }
 }

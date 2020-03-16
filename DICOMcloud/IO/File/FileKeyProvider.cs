@@ -13,44 +13,44 @@ namespace DICOMcloud.IO
     /// </summary>
     public class FileKeyProvider : IKeyProvider
     {
-        public virtual string GetContainerName ( string key ) 
+        public virtual string GetContainerName(string key)
         {
-            int index = key.LastIndexOf ( GetLogicalSeparator ( )  );
-            
-            if ( index == -1 )
-            { 
-               return key;
+            int index = key.LastIndexOf(GetLogicalSeparator());
+
+            if (index == -1)
+            {
+                return key;
             }
             else
-            { 
-               return key.Substring ( 0,  index ) ;
+            {
+                return key.Substring(0, index);
             }
         }
 
-        public virtual string GetLocationName ( string key ) 
+        public virtual string GetLocationName(string key)
         {
             int index = key.LastIndexOf(GetLogicalSeparator());
 
 
             if (index == -1)
-            { 
-               return string.Empty;
+            {
+                return string.Empty;
             }
             else
             {
-               return key.Substring(key.LastIndexOf(GetLogicalSeparator()) + 1);
+                return key.Substring(key.LastIndexOf(GetLogicalSeparator()) + 1);
             }
         }
 
-        public virtual string GetLogicalSeparator ( ) 
+        public virtual string GetLogicalSeparator()
         {
-            return Path.DirectorySeparatorChar.ToString ( ) ;
+            return Path.DirectorySeparatorChar.ToString();
         }
 
         public virtual string GetStorageKey(IMediaId id)
         {
-            return Path.Combine ( id.GetIdParts( ) ) ;
+            return Path.Combine(id.GetIdParts());
         }
 
-     }
+    }
 }

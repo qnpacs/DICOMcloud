@@ -16,112 +16,112 @@ namespace DICOMcloud.Wado
 {
     public class WadoRsService : IWadoRsService
     {
-        IObjectRetrieveService RetrieveService { get; set;  }
-        
-        public WadoRsService ( IObjectRetrieveService retrieveService )
+        IObjectRetrieveService RetrieveService { get; set; }
+
+        public WadoRsService(IObjectRetrieveService retrieveService)
         {
-            RetrieveService   = retrieveService ;
+            RetrieveService = retrieveService;
         }
 
         //DICOM Instances are returned in either DICOM or Bulk data format
         //DICOM format is part10 native, Bulk data is based on the accept:
         //octet-stream, jpeg, jp2....
-        public virtual HttpResponseMessage RetrieveStudy ( IWadoRsStudiesRequest request )
+        public virtual HttpResponseMessage RetrieveStudy(IWadoRsStudiesRequest request)
         {
-            return RetrieveMultipartInstance ( request, new WadoRsInstanceRequest ( request ) ) ;
+            return RetrieveMultipartInstance(request, new WadoRsInstanceRequest(request));
         }
 
-        public virtual HttpResponseMessage RetrieveSeries ( IWadoRsSeriesRequest request )
+        public virtual HttpResponseMessage RetrieveSeries(IWadoRsSeriesRequest request)
         {
-            return RetrieveMultipartInstance ( request, new WadoRsInstanceRequest ( request ) ) ;
+            return RetrieveMultipartInstance(request, new WadoRsInstanceRequest(request));
         }
 
-        public virtual HttpResponseMessage RetrieveInstance ( IWadoRsInstanceRequest request )
+        public virtual HttpResponseMessage RetrieveInstance(IWadoRsInstanceRequest request)
         {
-            return RetrieveMultipartInstance ( request, request ) ;
+            return RetrieveMultipartInstance(request, request);
         }
 
-        public virtual HttpResponseMessage RetrieveFrames ( IWadoRsFramesRequest request )
+        public virtual HttpResponseMessage RetrieveFrames(IWadoRsFramesRequest request)
         {
-            return RetrieveMultipartInstance ( request, request ) ;
+            return RetrieveMultipartInstance(request, request);
         }
 
-        public virtual HttpResponseMessage RetrieveBulkData ( IWadoRsInstanceRequest request )
-        {
-            //TODO: validation accept header is not dicom...
-
-            return RetrieveMultipartInstance ( request, request ) ;
-        }
-        
-        public virtual HttpResponseMessage RetrieveBulkData ( IWadoRsFramesRequest request )
+        public virtual HttpResponseMessage RetrieveBulkData(IWadoRsInstanceRequest request)
         {
             //TODO: validation accept header is not dicom...
 
-            return RetrieveMultipartInstance ( request, request ) ;
+            return RetrieveMultipartInstance(request, request);
         }
-        
+
+        public virtual HttpResponseMessage RetrieveBulkData(IWadoRsFramesRequest request)
+        {
+            //TODO: validation accept header is not dicom...
+
+            return RetrieveMultipartInstance(request, request);
+        }
+
         //Metadata can be XML (Required) or Json (optional) only. DICOM Instances are returned with no bulk data
         //Bulk data URL can be returned (which we should) 
         public virtual HttpResponseMessage RetrieveStudyMetadata(IWadoRsStudiesRequest request)
         {
-            return RetrieveInstanceMetadata ( new WadoRsInstanceRequest ( request ) );
+            return RetrieveInstanceMetadata(new WadoRsInstanceRequest(request));
         }
 
         public virtual HttpResponseMessage RetrieveSeriesMetadata(IWadoRsSeriesRequest request)
         {
-            return RetrieveInstanceMetadata ( new WadoRsInstanceRequest ( request ) );
+            return RetrieveInstanceMetadata(new WadoRsInstanceRequest(request));
         }
 
         public virtual HttpResponseMessage RetrieveInstanceMetadata(IWadoRsInstanceRequest request)
         {
-            if ( IsMultiPartRequest ( request ) )
+            if (IsMultiPartRequest(request))
             {
-                var subMediaHeader = MultipartResponseHelper.GetSubMediaType ( request.AcceptHeader.FirstOrDefault ( ) ) ;
+                var subMediaHeader = MultipartResponseHelper.GetSubMediaType(request.AcceptHeader.FirstOrDefault());
 
-                if ( null == subMediaHeader || subMediaHeader != MimeMediaTypes.xmlDicom ) 
+                if (null == subMediaHeader || subMediaHeader != MimeMediaTypes.xmlDicom)
                 {
-                    return new HttpResponseMessage ( System.Net.HttpStatusCode.BadRequest ) ;
+                    return new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest);
                 }
 
-                return RetrieveMultipartInstance ( request, request ) ; //should be an XML request!
+                return RetrieveMultipartInstance(request, request); //should be an XML request!
             }
             else //must be json, or just return json anyway (*/*)
             {
-                return ProcessJsonRequest ( request, request ) ;
+                return ProcessJsonRequest(request, request);
             }
         }
 
-        public virtual HttpResponseMessage RetrieveMultipartInstance ( IWadoRequestHeader header, IObjectId request )
+        public virtual HttpResponseMessage RetrieveMultipartInstance(IWadoRequestHeader header, IObjectId request)
         {
-            HttpResponseMessage response ;
-            MultipartContent multiContent ;
-            MediaTypeWithQualityHeaderValue selectedMediaTypeHeader ;
-            
+            HttpResponseMessage response;
+            MultipartContent multiContent;
+            MediaTypeWithQualityHeaderValue selectedMediaTypeHeader;
 
-            if ( !IsMultiPartRequest ( header ) )
+
+            if (!IsMultiPartRequest(header))
             {
-                return  new HttpResponseMessage ( System.Net.HttpStatusCode.NotAcceptable ) ; //TODO: check error code in standard
+                return new HttpResponseMessage(System.Net.HttpStatusCode.NotAcceptable); //TODO: check error code in standard
             }
 
-            response        = new HttpResponseMessage ( ) ;
-            multiContent    = new MultipartContent ( "related", MultipartResponseHelper.DicomDataBoundary ) ;           
-            selectedMediaTypeHeader = null ;
+            response = new HttpResponseMessage();
+            multiContent = new MultipartContent("related", MultipartResponseHelper.DicomDataBoundary);
+            selectedMediaTypeHeader = null;
 
-            response.Content = multiContent ;
+            response.Content = multiContent;
 
-            foreach ( var mediaTypeHeader in header.AcceptHeader ) 
+            foreach (var mediaTypeHeader in header.AcceptHeader)
             {
 
-                if ( request is IWadoRsFramesRequest )
+                if (request is IWadoRsFramesRequest)
                 {
-                    var frames = ((IWadoRsFramesRequest) request ).Frames ;
-                    foreach ( int frame in frames )
+                    var frames = ((IWadoRsFramesRequest)request).Frames;
+                    foreach (int frame in frames)
                     {
-                        request.Frame = frame ;
+                        request.Frame = frame;
 
-                        foreach ( var wadoResponse in ProcessMultipartRequest ( request, mediaTypeHeader ) )
-                        { 
-                            MultipartResponseHelper.AddMultipartContent ( multiContent, wadoResponse );
+                        foreach (var wadoResponse in ProcessMultipartRequest(request, mediaTypeHeader))
+                        {
+                            MultipartResponseHelper.AddMultipartContent(multiContent, wadoResponse);
 
                             selectedMediaTypeHeader = mediaTypeHeader;
                         }
@@ -129,22 +129,22 @@ namespace DICOMcloud.Wado
                 }
                 else
                 {
-                    foreach ( var wadoResponse in ProcessMultipartRequest ( request, mediaTypeHeader ) )
-                    { 
-                        MultipartResponseHelper.AddMultipartContent ( multiContent, wadoResponse );
+                    foreach (var wadoResponse in ProcessMultipartRequest(request, mediaTypeHeader))
+                    {
+                        MultipartResponseHelper.AddMultipartContent(multiContent, wadoResponse);
 
                         selectedMediaTypeHeader = mediaTypeHeader;
                     }
                 }
 
-                if (selectedMediaTypeHeader!= null) { break ; }
+                if (selectedMediaTypeHeader != null) { break; }
             }
 
 
 
-            if ( selectedMediaTypeHeader != null )
+            if (selectedMediaTypeHeader != null)
             {
-                multiContent.Headers.ContentType.Parameters.Add ( new System.Net.Http.Headers.NameValueHeaderValue ( "type", "\"" + MultipartResponseHelper.GetSubMediaType (selectedMediaTypeHeader) + "\"" ) ) ;
+                multiContent.Headers.ContentType.Parameters.Add(new System.Net.Http.Headers.NameValueHeaderValue("type", "\"" + MultipartResponseHelper.GetSubMediaType(selectedMediaTypeHeader) + "\""));
             }
             else
             {
@@ -152,83 +152,83 @@ namespace DICOMcloud.Wado
             }
 
 
-            return response ;
+            return response;
         }
 
-        protected virtual HttpResponseMessage ProcessJsonRequest 
-        ( 
-            IWadoRequestHeader header, 
+        protected virtual HttpResponseMessage ProcessJsonRequest
+        (
+            IWadoRequestHeader header,
             IObjectId objectID
         )
         {
-            List<IWadoRsResponse> responses = new List<IWadoRsResponse> ( ) ;
-            HttpResponseMessage response = new HttpResponseMessage ( ) ;
-            StringBuilder fullJsonResponse = new StringBuilder ("[") ;
-            StringBuilder jsonArray = new StringBuilder ( ) ;
-            string selectedTransfer = "" ;
-            bool exists = false ;
-            var mediaTypeHeader = header.AcceptHeader.FirstOrDefault ( ) ;
+            List<IWadoRsResponse> responses = new List<IWadoRsResponse>();
+            HttpResponseMessage response = new HttpResponseMessage();
+            StringBuilder fullJsonResponse = new StringBuilder("[");
+            StringBuilder jsonArray = new StringBuilder();
+            string selectedTransfer = "";
+            bool exists = false;
+            var mediaTypeHeader = header.AcceptHeader.FirstOrDefault();
 
-            IEnumerable<NameValueHeaderValue> transferSyntaxHeader = null ;
-            List<string> transferSyntaxes = new List<string> ( ) ;
-            var defaultTransfer = "" ;
+            IEnumerable<NameValueHeaderValue> transferSyntaxHeader = null;
+            List<string> transferSyntaxes = new List<string>();
+            var defaultTransfer = "";
 
-            
-            if ( null != mediaTypeHeader )
+
+            if (null != mediaTypeHeader)
             {
-                transferSyntaxHeader = mediaTypeHeader.Parameters.Where (n=>n.Name == "transfer-syntax") ;
+                transferSyntaxHeader = mediaTypeHeader.Parameters.Where(n => n.Name == "transfer-syntax");
             }
 
-            if ( null == transferSyntaxHeader || 0 == transferSyntaxHeader.Count ( ) )
+            if (null == transferSyntaxHeader || 0 == transferSyntaxHeader.Count())
             {
-                transferSyntaxes.Add ( defaultTransfer ) ;
+                transferSyntaxes.Add(defaultTransfer);
             }
             else
             {
-                transferSyntaxes.AddRange ( transferSyntaxHeader.Select ( n=>n.Value ) ) ;
+                transferSyntaxes.AddRange(transferSyntaxHeader.Select(n => n.Value));
             }
 
-            foreach ( var transfer in transferSyntaxes )
+            foreach (var transfer in transferSyntaxes)
             {
-                selectedTransfer = transfer == "*" ? defaultTransfer : transfer ;
+                selectedTransfer = transfer == "*" ? defaultTransfer : transfer;
 
-                foreach ( IStorageLocation storage in GetLocations (objectID, new DicomMediaProperties ( MimeMediaTypes.Json, selectedTransfer ) ) )
+                foreach (IStorageLocation storage in GetLocations(objectID, new DicomMediaProperties(MimeMediaTypes.Json, selectedTransfer)))
                 {
-                    exists = true ;
-                    
+                    exists = true;
+
                     using (var memoryStream = new MemoryStream())
                     {
-                        storage.Download ( memoryStream ) ;
-                        jsonArray.Append ( System.Text.Encoding.UTF8.GetString(memoryStream.ToArray ( ) ) ) ;
-                        jsonArray.Append (",") ;
+                        storage.Download(memoryStream);
+                        jsonArray.Append(System.Text.Encoding.UTF8.GetString(memoryStream.ToArray()));
+                        jsonArray.Append(",");
                     }
                 }
 
-                if ( exists ) { break ; }
+                if (exists) { break; }
             }
 
             fullJsonResponse.Append(jsonArray.ToString().TrimEnd(','));
-            fullJsonResponse.Append ("]") ;
+            fullJsonResponse.Append("]");
 
-            if ( exists ) 
+            if (exists)
             {
-                var content  = new StreamContent ( new MemoryStream (System.Text.Encoding.UTF8.GetBytes(fullJsonResponse.ToString())) ) ;
-            
-                content.Headers.ContentType= new System.Net.Http.Headers.MediaTypeHeaderValue (MimeMediaTypes.Json);
-            
-                if ( !string.IsNullOrWhiteSpace ( selectedTransfer ) )
+                var content = new StreamContent(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(fullJsonResponse.ToString())));
+
+                content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(MimeMediaTypes.Json);
+
+                if (!string.IsNullOrWhiteSpace(selectedTransfer))
                 {
-                    content.Headers.ContentType.Parameters.Add ( new NameValueHeaderValue ( "transfer-syntax", "\"" + selectedTransfer + "\""));
+                    content.Headers.ContentType.Parameters.Add(new NameValueHeaderValue("transfer-syntax", "\"" + selectedTransfer + "\""));
                 }
 
-                response.Content =  content ;
+                response.Content = content;
             }
             else
             {
-                response = new HttpResponseMessage ( System.Net.HttpStatusCode.NotFound ) ;
+                response = new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
             }
-            
-            return response ;
+
+            return response;
         }
 
 
@@ -241,67 +241,67 @@ namespace DICOMcloud.Wado
         (
             IObjectId objectID,
             MediaTypeWithQualityHeaderValue mediaTypeHeader
-            
+
         )
         {
-            string              subMediaType;
-            IEnumerable<string> transferSyntaxes ;
-            string              defaultTransfer = null;
-            bool                instancesFound = false ;
+            string subMediaType;
+            IEnumerable<string> transferSyntaxes;
+            string defaultTransfer = null;
+            bool instancesFound = false;
 
-            subMediaType = MultipartResponseHelper.GetSubMediaType(mediaTypeHeader) ;
+            subMediaType = MultipartResponseHelper.GetSubMediaType(mediaTypeHeader);
 
-            DefaultMediaTransferSyntax.Instance.TryGetValue ( subMediaType, out defaultTransfer );
+            DefaultMediaTransferSyntax.Instance.TryGetValue(subMediaType, out defaultTransfer);
 
-            transferSyntaxes = MultipartResponseHelper.GetRequestedTransferSyntax ( mediaTypeHeader, defaultTransfer );
+            transferSyntaxes = MultipartResponseHelper.GetRequestedTransferSyntax(mediaTypeHeader, defaultTransfer);
 
-            foreach ( var result in FindLocations ( objectID, subMediaType, transferSyntaxes, defaultTransfer ) )
+            foreach (var result in FindLocations(objectID, subMediaType, transferSyntaxes, defaultTransfer))
             {
-                instancesFound = true ;
+                instancesFound = true;
 
-                yield return new WadoResponse ( result.Location.GetReadStream ( ), subMediaType ) { TransferSyntax = result.TransferSyntax };
+                yield return new WadoResponse(result.Location.GetReadStream(), subMediaType) { TransferSyntax = result.TransferSyntax };
             }
 
-            if ( !instancesFound )
+            if (!instancesFound)
             {
-                string defaultDicomTransfer ;
+                string defaultDicomTransfer;
 
 
-                DefaultMediaTransferSyntax.Instance.TryGetValue ( MimeMediaTypes.DICOM, out defaultDicomTransfer ) ; 
-                
+                DefaultMediaTransferSyntax.Instance.TryGetValue(MimeMediaTypes.DICOM, out defaultDicomTransfer);
 
-                foreach ( var result in RetrieveService.GetTransformedSopInstances ( objectID, MimeMediaTypes.DICOM, defaultDicomTransfer, subMediaType, transferSyntaxes.FirstOrDefault ( ) ) )
+
+                foreach (var result in RetrieveService.GetTransformedSopInstances(objectID, MimeMediaTypes.DICOM, defaultDicomTransfer, subMediaType, transferSyntaxes.FirstOrDefault()))
                 {
-                    yield return new WadoResponse ( result.Location.GetReadStream ( ), subMediaType ) { TransferSyntax = result.TransferSyntax };
+                    yield return new WadoResponse(result.Location.GetReadStream(), subMediaType) { TransferSyntax = result.TransferSyntax };
                 }
             }
         }
 
-        protected virtual IEnumerable<ObjectRetrieveResult> FindLocations ( IObjectId objectID, string subMediaType, IEnumerable<string> transferSyntaxes, string defaultTransfer )
+        protected virtual IEnumerable<ObjectRetrieveResult> FindLocations(IObjectId objectID, string subMediaType, IEnumerable<string> transferSyntaxes, string defaultTransfer)
         {
-            return RetrieveService.FindSopInstances ( objectID, subMediaType, transferSyntaxes, defaultTransfer ) ;
+            return RetrieveService.FindSopInstances(objectID, subMediaType, transferSyntaxes, defaultTransfer);
         }
 
-        protected virtual IEnumerable<IStorageLocation> GetLocations ( IObjectId request, DicomMediaProperties mediaInfo )
+        protected virtual IEnumerable<IStorageLocation> GetLocations(IObjectId request, DicomMediaProperties mediaInfo)
         {
-            if ( null != request.Frame )
+            if (null != request.Frame)
             {
-                List<IStorageLocation> result = new List<IStorageLocation> ( ) ;
+                List<IStorageLocation> result = new List<IStorageLocation>();
 
-                
-                result.Add ( RetrieveService.RetrieveSopInstance ( request, mediaInfo ) ) ;
 
-                return result ;
+                result.Add(RetrieveService.RetrieveSopInstance(request, mediaInfo));
+
+                return result;
             }
             else
             {
-                return RetrieveService.RetrieveSopInstances ( request, mediaInfo ) ;
+                return RetrieveService.RetrieveSopInstances(request, mediaInfo);
             }
         }
 
-        protected virtual bool IsMultiPartRequest ( IWadoRequestHeader header )
+        protected virtual bool IsMultiPartRequest(IWadoRequestHeader header)
         {
-            return MultipartResponseHelper.IsMultiPartRequest ( header ) ;
+            return MultipartResponseHelper.IsMultiPartRequest(header);
         }
     }
 }

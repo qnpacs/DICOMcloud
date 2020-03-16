@@ -7,64 +7,64 @@ using System.Threading.Tasks;
 
 namespace DICOMcloud.IO
 {
-    public class FileStorageService : MediaStorageService 
+    public class FileStorageService : MediaStorageService
     {
-        public FileStorageService ( ) 
-        : this ( ".//" )
+        public FileStorageService()
+        : this(".//")
         {
         }
 
-        public FileStorageService ( string storePath ) 
-        : this ( storePath, new FileKeyProvider ( ) )
+        public FileStorageService(string storePath)
+        : this(storePath, new FileKeyProvider())
         {
         }
 
-        public FileStorageService ( string storePath, IKeyProvider keyProvider ) 
+        public FileStorageService(string storePath, IKeyProvider keyProvider)
         {
-            BaseStorePath = storePath ;
-            __KeyProvider = keyProvider  ;
+            BaseStorePath = storePath;
+            __KeyProvider = keyProvider;
         }
 
-        protected override IStorageContainer GetContainer ( string containerKey ) 
+        protected override IStorageContainer GetContainer(string containerKey)
         {
-            LocalStorageContainer storage = new LocalStorageContainer ( GetStoragePath (containerKey ) ) ;
+            LocalStorageContainer storage = new LocalStorageContainer(GetStoragePath(containerKey));
 
-            if ( !Directory.Exists ( storage.FolderPath ))
+            if (!Directory.Exists(storage.FolderPath))
             {
-                Directory.CreateDirectory ( storage.FolderPath )  ;
+                Directory.CreateDirectory(storage.FolderPath);
             }
 
-            return storage ;
+            return storage;
         }
 
-        protected override IKeyProvider GetKeyProvider ( ) 
+        protected override IKeyProvider GetKeyProvider()
         {
-            return __KeyProvider ;
+            return __KeyProvider;
         }
 
-        protected override IEnumerable<IStorageContainer> GetContainers ( string containerKey ) 
+        protected override IEnumerable<IStorageContainer> GetContainers(string containerKey)
         {
-            if ( !Directory.Exists (Path.Combine(BaseStorePath,containerKey)))
+            if (!Directory.Exists(Path.Combine(BaseStorePath, containerKey)))
             {
                 yield break;
             }
 
-            foreach ( string folder in Directory.EnumerateDirectories ( BaseStorePath, containerKey, SearchOption.TopDirectoryOnly ))
+            foreach (string folder in Directory.EnumerateDirectories(BaseStorePath, containerKey, SearchOption.TopDirectoryOnly))
             {
-                yield return GetContainer ( folder ) ;
+                yield return GetContainer(folder);
             }
         }
 
-        protected virtual string GetStoragePath ( string folderName )
+        protected virtual string GetStoragePath(string folderName)
         {
-            return Path.Combine (BaseStorePath, folderName ) ; 
+            return Path.Combine(BaseStorePath, folderName);
         }
 
-        protected override bool ContainerExists ( string containerKey )
+        protected override bool ContainerExists(string containerKey)
         {
-            LocalStorageContainer storage = new LocalStorageContainer ( GetStoragePath ( containerKey ) ) ;
+            LocalStorageContainer storage = new LocalStorageContainer(GetStoragePath(containerKey));
 
-            return Directory.Exists ( storage.FolderPath ) ;
+            return Directory.Exists(storage.FolderPath);
         }
 
         public string BaseStorePath { get; set; }

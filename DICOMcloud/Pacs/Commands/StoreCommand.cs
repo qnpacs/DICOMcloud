@@ -200,14 +200,14 @@ namespace DICOMcloud.Pacs.Commands
         public StorageSettings()
         {
             StoreOriginal = false;
-            ValidateDuplicateInstance = true;
+            ValidateDuplicateInstance = false;
             StoreQueryModel = true;
 
             MediaTypes = new List<DicomMediaProperties>();
 
             MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID));
             MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.Json));
-            MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.UncompressedData, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID));
+            //  MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.UncompressedData, DicomTransferSyntax.ExplicitVRLittleEndian.UID.UID));
             MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.xmlDicom));
             MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossless.UID.UID));
             MediaTypes.Add(new DicomMediaProperties(MimeMediaTypes.DICOM, DicomTransferSyntax.JPEG2000Lossy.UID.UID));

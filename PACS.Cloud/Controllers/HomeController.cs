@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace PACS.Cloud.Controllers
 {
+
     public class HomeController : Controller
     {
         public ActionResult Index()

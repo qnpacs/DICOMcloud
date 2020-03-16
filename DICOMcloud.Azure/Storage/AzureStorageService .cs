@@ -9,71 +9,71 @@ namespace DICOMcloud.Azure.IO
 {
     public class AzureStorageService : MediaStorageService//, IEnumerable<IStorageContainer>
     {
-        public AzureStorageService ( string connectionName )
-        : this ( CloudStorageAccount.Parse( CloudConfigurationManager.GetSetting(connectionName) ) )
-        {}
+        public AzureStorageService(string connectionName)
+        : this(CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting(connectionName)))
+        { }
 
-        public AzureStorageService ( CloudStorageAccount storageAccount )
+        public AzureStorageService(CloudStorageAccount storageAccount)
         {
             // Create a blob client for interacting with the blob service.
             CloudBlobClient blobClient = storageAccount.CreateCloudBlobClient();
-            
+
             Init(blobClient);
         }
 
         protected override IStorageContainer GetContainer(string containerKey)
         {
-            containerKey = GetValidContainerKey ( containerKey );
+            containerKey = GetValidContainerKey(containerKey);
 
-            CloudBlobContainer cloudContainer = __CloudClient.GetContainerReference ( containerKey );
+            CloudBlobContainer cloudContainer = __CloudClient.GetContainerReference(containerKey);
 
-            cloudContainer.CreateIfNotExists ( );
+            cloudContainer.CreateIfNotExists();
 
-            return new AzureContainer ( cloudContainer );
+            return new AzureContainer(cloudContainer);
         }
 
-        protected override IEnumerable<IStorageContainer> GetContainers ( string containerKey ) 
+        protected override IEnumerable<IStorageContainer> GetContainers(string containerKey)
         {
-            containerKey = GetValidContainerKey ( containerKey );
+            containerKey = GetValidContainerKey(containerKey);
 
-            foreach ( var container in __CloudClient.ListContainers ( containerKey, ContainerListingDetails.None ) )
+            foreach (var container in __CloudClient.ListContainers(containerKey, ContainerListingDetails.None))
             {
-                yield return GetContainer ( containerKey ) ;
+                yield return GetContainer(containerKey);
             }
         }
 
         private void Init(CloudBlobClient blobClient)
         {
             __CloudClient = blobClient;
-            __KeyProvider = new AzureKeyProvider ( ) ;
+            __KeyProvider = new AzureKeyProvider();
         }
 
         protected override IKeyProvider GetKeyProvider()
         {
-            return __KeyProvider ;
+            return __KeyProvider;
         }
 
-        protected override bool ContainerExists ( string containerKey )
+        protected override bool ContainerExists(string containerKey)
         {
-            containerKey = GetValidContainerKey ( containerKey );
+            containerKey = GetValidContainerKey(containerKey);
 
-            CloudBlobContainer cloudContainer = __CloudClient.GetContainerReference ( containerKey ) ;
+            CloudBlobContainer cloudContainer = __CloudClient.GetContainerReference(containerKey);
 
-            return cloudContainer.Exists ( ) ;
+            return cloudContainer.Exists();
         }
 
-        private static string GetValidContainerKey ( string containerKey )
+        private static string GetValidContainerKey(string containerKey)
         {
-            containerKey = containerKey.ToLower ( );
+            containerKey = containerKey.ToLower();
 
 
-            containerKey = containerKey.Replace ( __Separators, "a" );
+            containerKey = containerKey.Replace(__Separators, "a");
             return containerKey;
         }
 
         private CloudBlobClient __CloudClient { get; set; }
         private IKeyProvider __KeyProvider { get; set; }
 
-        private static char[] __Separators = "!@#$%^&*()+=[]{}\\|;':\",.<>/?~`".ToCharArray ( )  ;
+        private static char[] __Separators = "!@#$%^&*()+=[]{}\\|;':\",.<>/?~`".ToCharArray();
     }
 }

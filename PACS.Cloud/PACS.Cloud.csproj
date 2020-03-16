@@ -304,6 +304,10 @@
     <Content Include="Scripts\jquery-3.3.1.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DICOMcloud.AWS\DICOMcloud.AWS.csproj">
+      <Project>{ac77500e-196d-48ab-baa6-214e58eb84ff}</Project>
+      <Name>DICOMcloud.AWS</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DICOMcloud.Azure\DICOMcloud.Azure.csproj">
       <Project>{85c81265-ca86-4c3d-93b9-7ac54fcd20af}</Project>
       <Name>DICOMcloud.Azure</Name>
